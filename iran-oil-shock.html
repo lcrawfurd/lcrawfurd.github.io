@@ -182,6 +182,10 @@
           <h3>Policy comparison</h3>
           <table id="policy_table"></table>
 
+          <div class="info" style="margin-top:16px">
+            <strong>Why coverage matters more than generosity:</strong> The people <em>newly</em> pushed into food insecurity are those just above the poverty line &mdash; roughly the 20th&ndash;35th percentile. A smaller transfer to the bottom 30% reaches these marginal people. A larger transfer to only the bottom 20% mostly goes to people who were <em>already</em> food insecure before the shock. In a crisis, reaching the right people matters more than the size of the transfer.
+          </div>
+
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:16px">
             <div class="info">
               <strong>Cash transfers work best when:</strong>
@@ -497,11 +501,11 @@ function doUpdate() {
   const qNames = ['Q1 (poorest)', 'Q2', 'Q3', 'Q4', 'Q5 (richest)'];
   const qColors = ['#d62728', '#ff7f0e', '#bcbd22', '#2ca02c', '#1f77b4'];
   const traces1 = p.foodShares.map((fs, i) => ({
-    x: oilRange, y: oilRange.map(op => (op - p.oilBaseline) / p.oilBaseline * totalPt * fs * 100),
+    x: oilRange, y: oilRange.map(op => -(op - p.oilBaseline) / p.oilBaseline * totalPt * fs * 100),
     name: qNames[i], line: { color: qColors[i], width: 2 }, type: 'scatter'
   }));
   Plotly.react('chart1', traces1, {
-    title: 'A. Real income loss by quintile', xaxis: { title: 'Oil price ($/barrel)' }, yaxis: { title: 'Real income loss (%)' },
+    title: 'A. Real income change by quintile', xaxis: { title: 'Oil price ($/barrel)' }, yaxis: { title: 'Real income change (%)' },
     height: 370, margin: { t: 40, b: 40, l: 50, r: 20 },
     shapes: [{ type: 'line', x0: p.oilPrice, x1: p.oilPrice, y0: 0, y1: 1, yref: 'paper', line: { dash: 'dash', color: 'gray' } }],
     legend: { font: { size: 10 } }
