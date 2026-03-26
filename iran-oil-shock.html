@@ -72,11 +72,12 @@
     <div class="sidebar">
       <h3>Oil Prices</h3>
       <label>Baseline ($/barrel, pre-war)</label>
-      <div class="slider-row"><input type="range" id="oil_baseline" min="40" max="90" value="73" step="1"><span class="val" id="oil_baseline_v">$73</span></div>
+      <div class="slider-row"><input type="range" id="oil_baseline" min="40" max="90" value="71" step="1"><span class="val" id="oil_baseline_v">$71</span></div>
       <label>Current / scenario oil price</label>
-      <div class="slider-row"><input type="range" id="oil_price" min="73" max="150" value="110" step="1"><span class="val" id="oil_price_v">$110</span></div>
+      <div class="slider-row"><input type="range" id="oil_price" min="71" max="150" value="110" step="1"><span class="val" id="oil_price_v">$110</span></div>
 
       <h3>Pass-through</h3>
+      <p style="font-size:0.75em;color:var(--muted);margin:2px 0 4px">Total ~0.22 from literature (Baffes 2007: 0.18; World Bank 2016: 0.19; Baffes &amp; Dennis 2013: 0.25). The transport/fertilizer split is our assumption &mdash; not directly estimated in any single paper.</p>
       <label>Transport channel</label>
       <div class="slider-row"><input type="range" id="pt_transport" min="0" max="0.30" value="0.10" step="0.01"><span class="val" id="pt_transport_v">0.10</span></div>
       <label>Fertilizer channel</label>
@@ -92,6 +93,7 @@
       <div class="slider-row"><input type="range" id="gini" min="0.20" max="0.65" value="0.40" step="0.01"><span class="val" id="gini_v">0.40</span></div>
 
       <h3>Food Shares by Quintile</h3>
+      <p style="font-size:0.75em;color:var(--muted);margin:2px 0 4px">Q1 consistent with World Bank SSA surveys (60&ndash;69%). Q5 of 20% is low for pure low-income countries (~40%) but reflects the full developing world including middle-income urban populations.</p>
       <label>Q1 (poorest)</label>
       <div class="slider-row"><input type="range" id="fq1" min="0.30" max="0.85" value="0.65" step="0.05"><span class="val" id="fq1_v">65%</span></div>
       <label>Q2</label>
@@ -148,13 +150,15 @@
           <p>Where &epsilon; is the <strong>pass-through elasticity</strong> &mdash; how much a 1% oil price rise increases food prices. We decompose into two channels:</p>
           <ul style="margin:8px 0 8px 20px">
             <li><strong>Transport</strong>: oil &rarr; diesel &rarr; transport costs &rarr; food retail price</li>
-            <li><strong>Fertilizer</strong>: oil &rarr; natural gas &rarr; ammonia/urea &rarr; crop production costs</li>
+            <li><strong>Fertilizer</strong>: oil &rarr; natural gas &rarr; ammonia/urea &rarr; crop production costs (natural gas is 70&ndash;90% of ammonia production cost)</li>
           </ul>
+          <p style="font-size:0.85em;color:var(--muted)"><strong>Note on sources:</strong> The total pass-through of ~0.22 is well-supported in the literature (Baffes 2007: 0.18; World Bank 2016: 0.19; Baffes &amp; Dennis 2013: 0.25; Dillon &amp; Barrett 2016: 0.26 for East Africa). However, the split between transport (0.10) and fertilizer (0.12) channels is our assumption &mdash; it is not directly estimated in any single paper. The sensitivity tab shows how much this matters.</p>
           <p id="step1_numbers"></p>
 
           <h3 style="margin-top:20px">Step 2: Food prices &rarr; Real income loss</h3>
           <div class="eq">Real income loss<sub>q</sub> = s<sub>q</sub> &times; &Delta;P<sub>food</sub></div>
           <p>Where s<sub>q</sub> is the <strong>food expenditure share</strong> for quintile q. The poor spend more of their income on food, so the same food price increase hits them proportionally harder.</p>
+          <p style="font-size:0.85em;color:var(--muted)"><strong>Note:</strong> Q1 food share of 65% is consistent with World Bank SSA household surveys (60&ndash;69% for the bottom quintile). Q5 of 20% is low for pure low-income countries (where even the richest quintile spends ~40% on food) but reflects the full developing world including middle-income urban populations. Adjust in the sidebar to explore.</p>
           <p id="step2_numbers"></p>
 
           <h3 style="margin-top:20px">Step 3: Count who falls below the poverty line</h3>
@@ -259,7 +263,7 @@ foodShares = [<span class="number">0.65</span>, <span class="number">0.55</span>
         <div class="card">
           <h3>Oil prices</h3>
           <ul style="margin-left:16px">
-            <li>CNBC, March 2026: Brent crude $73 (Feb 27) &rarr; $120 (Mar 9) &rarr; ~$100 (Mar 25)</li>
+            <li>CNBC/Fortune, March 2026: Brent crude ~$71 (late Feb) &rarr; $120 (Mar 9) &rarr; ~$106 (Mar 25)</li>
             <li>IEA: largest supply disruption in history &mdash; Hormuz flows collapsed from 20M to near-zero barrels/day</li>
           </ul>
           <h3>Pass-through elasticities</h3>
