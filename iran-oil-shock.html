@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Iran War Oil Shock: Food Prices & Poverty</title>
+<script src="https://cdn.plot.ly/plotly-2.35.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jstat@1.9.6/dist/jstat.min.js"></script>
+<style>
+  :root { --accent: #1a73e8; --bg: #f8f9fa; --card: #ffffff; --text: #202124; --muted: #5f6368; --border: #dadce0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+  h1 { font-size: 1.8em; margin-bottom: 4px; }
+  h2 { font-size: 1.3em; margin: 20px 0 10px; color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 4px; }
+  h3 { font-size: 1.1em; margin: 14px 0 6px; }
+  .subtitle { color: var(--muted); margin-bottom: 12px; font-style: italic; }
+  .calibration-note { background: #e8f0fe; border-left: 4px solid var(--accent); padding: 10px 14px; margin-bottom: 16px; border-radius: 0 4px 4px 0; font-size: 0.9em; }
+  .layout { display: grid; grid-template-columns: 300px 1fr; gap: 20px; }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+  .sidebar { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; height: fit-content; position: sticky; top: 20px; }
+  .sidebar h3 { color: var(--accent); margin-top: 12px; font-size: 0.95em; }
+  .sidebar h3:first-child { margin-top: 0; }
+  .main { min-width: 0; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .metric { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px; text-align: center; }
+  .metric-value { font-size: 1.6em; font-weight: 700; color: var(--accent); }
+  .metric-label { font-size: 0.8em; color: var(--muted); }
+  .metric-sub { font-size: 0.75em; color: var(--muted); }
+  .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 900px) { .charts-grid { grid-template-columns: 1fr; } }
+  .chart-container { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 8px; }
+  label { display: block; font-size: 0.85em; color: var(--muted); margin: 6px 0 2px; }
+  input[type="range"] { width: 100%; accent-color: var(--accent); }
+  input[type="number"] { width: 80px; padding: 3px 6px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.9em; }
+  .slider-row { display: flex; align-items: center; gap: 8px; }
+  .slider-row input[type="range"] { flex: 1; }
+  .slider-row .val { min-width: 50px; text-align: right; font-size: 0.85em; font-weight: 600; color: var(--accent); }
+  .tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border); margin-bottom: 12px; }
+  .tab { padding: 8px 16px; cursor: pointer; border: none; background: none; font-size: 0.95em; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -2px; }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.9em; margin: 10px 0; }
+  th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+  th { background: #f1f3f4; font-weight: 600; }
+  tr.highlight { background: #e8f0fe; }
+  tr.bad { background: #fce8e6; }
+  tr.good { background: #e6f4ea; }
+  .eq { background: #f8f9fa; padding: 12px; border-radius: 6px; font-family: 'Cambria Math', 'Latin Modern Math', serif; font-size: 1.1em; margin: 8px 0; text-align: center; overflow-x: auto; }
+  .warning { background: #fce8e6; border-left: 4px solid #d93025; padding: 10px 14px; border-radius: 0 4px 4px 0; font-size: 0.9em; margin: 10px 0; }
+  .info { background: #e6f4ea; border-left: 4px solid #1e8e3e; padding: 10px 14px; border-radius: 0 4px 4px 0; font-size: 0.9em; margin: 10px 0; }
+  code { background: #f1f3f4; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }
+  pre { background: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 6px; overflow-x: auto; font-size: 0.85em; line-height: 1.5; margin: 10px 0; }
+  .keyword { color: #569cd6; } .string { color: #ce9178; } .comment { color: #6a9955; } .number { color: #b5cea8; } .func { color: #dcdcaa; }
+  a { color: var(--accent); }
+  .cost-line { font-size: 0.85em; color: var(--muted); margin-top: 8px; }
+  .footer { text-align: center; color: var(--muted); font-size: 0.8em; margin-top: 30px; padding: 16px; border-top: 1px solid var(--border); }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Iran War Oil Shock &rarr; Food Prices &rarr; Poverty</h1>
+  <p class="subtitle">How an oil price spike hits developing countries &mdash; and what policies can help</p>
+  <div class="calibration-note">
+    <strong>Calibration:</strong> Default parameters reproduce the <a href="https://www.wfp.org/publications/projected-increase-acute-food-insecurity-due-middle-east-conflict" target="_blank">WFP estimate</a> of <strong>45 million</strong> additional people pushed into acute hunger at ~$100/barrel oil. Population = 2.3 billion (developing world exposed to food price shocks).
+  </div>
+
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <h3>Oil Prices</h3>
+      <label>Baseline ($/barrel, pre-war)</label>
+      <div class="slider-row"><input type="range" id="oil_baseline" min="40" max="90" value="73" step="1"><span class="val" id="oil_baseline_v">$73</span></div>
+      <label>Current / scenario oil price</label>
+      <div class="slider-row"><input type="range" id="oil_price" min="73" max="150" value="110" step="1"><span class="val" id="oil_price_v">$110</span></div>
+
+      <h3>Pass-through</h3>
+      <label>Transport channel</label>
+      <div class="slider-row"><input type="range" id="pt_transport" min="0" max="0.30" value="0.10" step="0.01"><span class="val" id="pt_transport_v">0.10</span></div>
+      <label>Fertilizer channel</label>
+      <div class="slider-row"><input type="range" id="pt_fert" min="0" max="0.30" value="0.12" step="0.01"><span class="val" id="pt_fert_v">0.12</span></div>
+      <label>Total: <strong id="pt_total_v">0.22</strong></label>
+
+      <h3>Population</h3>
+      <label>Exposed population (millions)</label>
+      <div class="slider-row"><input type="range" id="population" min="50" max="5000" value="2300" step="50"><span class="val" id="population_v">2,300</span></div>
+      <label>Mean daily income ($ PPP)</label>
+      <div class="slider-row"><input type="range" id="mean_income" min="1" max="20" value="5.5" step="0.5"><span class="val" id="mean_income_v">$5.50</span></div>
+      <label>Gini coefficient</label>
+      <div class="slider-row"><input type="range" id="gini" min="0.20" max="0.65" value="0.40" step="0.01"><span class="val" id="gini_v">0.40</span></div>
+
+      <h3>Food Shares by Quintile</h3>
+      <label>Q1 (poorest)</label>
+      <div class="slider-row"><input type="range" id="fq1" min="0.30" max="0.85" value="0.65" step="0.05"><span class="val" id="fq1_v">65%</span></div>
+      <label>Q2</label>
+      <div class="slider-row"><input type="range" id="fq2" min="0.20" max="0.75" value="0.55" step="0.05"><span class="val" id="fq2_v">55%</span></div>
+      <label>Q3</label>
+      <div class="slider-row"><input type="range" id="fq3" min="0.15" max="0.65" value="0.45" step="0.05"><span class="val" id="fq3_v">45%</span></div>
+      <label>Q4</label>
+      <div class="slider-row"><input type="range" id="fq4" min="0.10" max="0.55" value="0.35" step="0.05"><span class="val" id="fq4_v">35%</span></div>
+      <label>Q5 (richest)</label>
+      <div class="slider-row"><input type="range" id="fq5" min="0.05" max="0.40" value="0.20" step="0.05"><span class="val" id="fq5_v">20%</span></div>
+
+      <h3>Policy Parameters</h3>
+      <label>Cash transfer 1: $/day</label>
+      <div class="slider-row"><input type="range" id="cash1_amt" min="0" max="1" value="0.15" step="0.05"><span class="val" id="cash1_amt_v">$0.15</span></div>
+      <label>Cash 1: coverage (%)</label>
+      <div class="slider-row"><input type="range" id="cash1_cov" min="0" max="100" value="30" step="5"><span class="val" id="cash1_cov_v">30%</span></div>
+      <label>Cash transfer 2: $/day</label>
+      <div class="slider-row"><input type="range" id="cash2_amt" min="0" max="2" value="0.25" step="0.05"><span class="val" id="cash2_amt_v">$0.25</span></div>
+      <label>Cash 2: coverage (%)</label>
+      <div class="slider-row"><input type="range" id="cash2_cov" min="0" max="100" value="20" step="5"><span class="val" id="cash2_cov_v">20%</span></div>
+      <label>Food subsidy absorption (%)</label>
+      <div class="slider-row"><input type="range" id="subsidy_rate" min="0" max="100" value="50" step="5"><span class="val" id="subsidy_rate_v">50%</span></div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+      <div class="metrics" id="metrics"></div>
+      <div class="cost-line" id="cost-line"></div>
+
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('results')">Results</button>
+        <button class="tab" onclick="switchTab('model')">Model</button>
+        <button class="tab" onclick="switchTab('policy')">Policy</button>
+        <button class="tab" onclick="switchTab('code')">Code</button>
+        <button class="tab" onclick="switchTab('sources')">Sources</button>
+      </div>
+
+      <!-- RESULTS TAB -->
+      <div class="tab-content active" id="tab-results">
+        <div class="charts-grid">
+          <div class="chart-container"><div id="chart1"></div></div>
+          <div class="chart-container"><div id="chart2"></div></div>
+          <div class="chart-container"><div id="chart3"></div></div>
+          <div class="chart-container"><div id="chart4"></div></div>
+        </div>
+        <div class="chart-container" style="margin-top:16px"><div id="chart_dist"></div></div>
+      </div>
+
+      <!-- MODEL TAB -->
+      <div class="tab-content" id="tab-model">
+        <div class="card">
+          <h3>Step 1: Oil prices &rarr; Food prices</h3>
+          <div class="eq">&Delta;P<sub>food</sub> = ((P<sub>oil</sub><sup>new</sup> &minus; P<sub>oil</sub><sup>baseline</sup>) / P<sub>oil</sub><sup>baseline</sup>) &times; &epsilon;</div>
+          <p>Where &epsilon; is the <strong>pass-through elasticity</strong> &mdash; how much a 1% oil price rise increases food prices. We decompose into two channels:</p>
+          <ul style="margin:8px 0 8px 20px">
+            <li><strong>Transport</strong>: oil &rarr; diesel &rarr; transport costs &rarr; food retail price</li>
+            <li><strong>Fertilizer</strong>: oil &rarr; natural gas &rarr; ammonia/urea &rarr; crop production costs</li>
+          </ul>
+          <p id="step1_numbers"></p>
+
+          <h3 style="margin-top:20px">Step 2: Food prices &rarr; Real income loss</h3>
+          <div class="eq">Real income loss<sub>q</sub> = s<sub>q</sub> &times; &Delta;P<sub>food</sub></div>
+          <p>Where s<sub>q</sub> is the <strong>food expenditure share</strong> for quintile q. The poor spend more of their income on food, so the same food price increase hits them proportionally harder.</p>
+          <p id="step2_numbers"></p>
+
+          <h3 style="margin-top:20px">Step 3: Count who falls below the poverty line</h3>
+          <div class="eq">N<sub>new poor</sub> = &sum;<sub>i</sub> 1[y<sub>i</sub>(1 &minus; s<sub>q(i)</sub> &middot; &Delta;P<sub>food</sub>) &lt; z] &minus; &sum;<sub>i</sub> 1[y<sub>i</sub> &lt; z]</div>
+          <p>We generate 200,000 synthetic individuals from a <strong>log-normal income distribution</strong> calibrated to the target mean income and Gini, reduce each person's effective purchasing power, and count how many cross below the food insecurity threshold ($2.50/day).</p>
+          <p id="step3_numbers"></p>
+
+          <h3 style="margin-top:20px">Policy interventions</h3>
+          <table>
+            <tr><th>Policy</th><th>How it works in the model</th></tr>
+            <tr><td>Cash transfer</td><td>Add transfer amount to effective income of bottom X%</td></tr>
+            <tr><td>Food subsidy</td><td>Government absorbs X% of food price increase for everyone</td></tr>
+            <tr><td>Price controls</td><td>70% price reduction, but 20% face shortages (modeled as 30% welfare loss)</td></tr>
+          </table>
+
+          <div class="warning" style="margin-top:16px">
+            <strong>Key caveats:</strong> This is a stylized model, not a forecast. Log-normal distribution is an approximation. Pass-through varies enormously by country (0.03&ndash;0.40+). The model is static &mdash; no supply response, exchange rate effects, or coping strategies. Pass-through takes 6&ndash;12 months to materialize.
+          </div>
+        </div>
+      </div>
+
+      <!-- POLICY TAB -->
+      <div class="tab-content" id="tab-policy">
+        <div class="card">
+          <h3>Policy comparison</h3>
+          <table id="policy_table"></table>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:16px">
+            <div class="info">
+              <strong>Cash transfers work best when:</strong>
+              <ul style="margin:6px 0 0 16px; font-size:0.9em">
+                <li>Markets are well-integrated, supply can respond</li>
+                <li>The shock is a <em>price</em> crisis (food exists but costs more)</li>
+                <li>Urban areas with good transport</li>
+              </ul>
+            </div>
+            <div class="info">
+              <strong>Food subsidies / in-kind work best when:</strong>
+              <ul style="margin:6px 0 0 16px; font-size:0.9em">
+                <li>Markets are thin/remote (Kandpal et al. 2023)</li>
+                <li>The shock is a <em>supply</em> crisis (less food produced)</li>
+                <li>Distribution infrastructure exists (e.g. India's PDS)</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="warning" style="margin-top:16px">
+            <strong>Cash transfers in thin markets (Kandpal et al. 2023, <em>REStat</em>):</strong> In the Philippines, a targeted cash transfer raised perishable food prices in remote markets and increased stunting among non-beneficiary children by 11 percentage points. An oil&rarr;fertilizer shock <em>reduces food supply</em> &mdash; pumping cash into supply-constrained markets can make prices worse. Best approach: cash in urban areas, direct food provision in remote areas.
+          </div>
+
+          <div class="warning">
+            <strong>Price controls don't work:</strong> High prices reflect real scarcity. Countries that tried to freeze food/fuel prices saw shortages, queues, smuggling, and black markets. In the model, price controls are <em>worse than doing nothing</em>.
+          </div>
+        </div>
+      </div>
+
+      <!-- CODE TAB -->
+      <div class="tab-content" id="tab-code">
+        <div class="card">
+          <h3>Core simulation function</h3>
+          <pre><span class="keyword">function</span> <span class="func">computeImpacts</span>(oilPriceNew, policy, transferUsd, transferCov) {
+  <span class="comment">// Step 1: Oil -> food prices</span>
+  <span class="keyword">const</span> oilPctChange = (oilPriceNew - oilBaseline) / oilBaseline;
+  <span class="keyword">const</span> foodPriceChange = oilPctChange * totalPassthrough;
+
+  <span class="comment">// Step 2: Real income loss (varies by quintile)</span>
+  <span class="keyword">const</span> realIncomeLoss = foodShare[i] * foodPriceChange;
+  <span class="keyword">const</span> effectiveIncome = incomes[i] * (<span class="number">1</span> - realIncomeLoss);
+
+  <span class="comment">// Policy: cash transfers add to effective income</span>
+  <span class="keyword">if</span> (policy === <span class="string">'cash_transfer'</span>) {
+    <span class="keyword">if</span> (incomes[i] <= percentile(incomes, transferCov))
+      effectiveIncome += transferUsd;
+  }
+
+  <span class="comment">// Step 3: Count who crosses below poverty line</span>
+  newPoor = count(effectiveIncome < povertyLine)
+          - count(incomes < povertyLine);
+  <span class="keyword">return</span> newPoor * population;
+}</pre>
+
+          <h3>Income distribution</h3>
+          <pre><span class="comment">// Log-normal calibrated to mean income and Gini</span>
+<span class="comment">// Gini = 2*Phi(sigma/sqrt(2)) - 1  ->  solve for sigma</span>
+<span class="comment">// mu = ln(meanIncome) - sigma^2/2</span>
+incomes = lognormal(mu, sigma, N=<span class="number">200000</span>);
+
+<span class="comment">// Food shares by quintile (poor spend more on food)</span>
+foodShares = [<span class="number">0.65</span>, <span class="number">0.55</span>, <span class="number">0.45</span>, <span class="number">0.35</span>, <span class="number">0.20</span>];</pre>
+
+          <h3>Key elasticities (current values)</h3>
+          <pre id="elasticity_code"></pre>
+        </div>
+      </div>
+
+      <!-- SOURCES TAB -->
+      <div class="tab-content" id="tab-sources">
+        <div class="card">
+          <h3>Oil prices</h3>
+          <ul style="margin-left:16px">
+            <li>CNBC, March 2026: Brent crude $73 (Feb 27) &rarr; $120 (Mar 9) &rarr; ~$100 (Mar 25)</li>
+            <li>IEA: largest supply disruption in history &mdash; Hormuz flows collapsed from 20M to near-zero barrels/day</li>
+          </ul>
+          <h3>Pass-through elasticities</h3>
+          <ul style="margin-left:16px">
+            <li><strong>IMF global average</strong>: 1% oil &rarr; ~0.2% food prices</li>
+            <li>Dillon & Barrett (2014). <a href="https://www.imf.org/external/np/seminars/eng/2014/food/pdf/DillonBarrett.pdf" target="_blank">Global Oil Prices and Local Food Prices: Evidence from East Africa</a>. Pass-through 3&ndash;21%.</li>
+            <li>IMF WP/22/173: <a href="https://www.imf.org/-/media/files/publications/wp/2022/english/wpiea2022173-print-pdf.pdf" target="_blank">Second-Round Effects of Oil Price Shocks</a></li>
+            <li>Wongpiyabovorn (2024). <a href="https://onlinelibrary.wiley.com/doi/full/10.1002/jaa2.133" target="_blank">Examining the factors of fertilizer pricing</a>. Natural gas = 70&ndash;90% of ammonia production cost.</li>
+          </ul>
+          <h3>Food insecurity</h3>
+          <ul style="margin-left:16px">
+            <li><strong>WFP (March 2026)</strong>: <a href="https://news.un.org/en/story/2026/03/1167147" target="_blank">45M additional people could face acute hunger</a></li>
+            <li>Regional: Asia +9.1M, E/S Africa +17.7M, W/C Africa +10.4M, MENA +5.2M, LAC +2.2M</li>
+            <li><a href="https://www.wfp.org/publications/projected-increase-acute-food-insecurity-due-middle-east-conflict" target="_blank">WFP full analysis</a></li>
+          </ul>
+          <h3>Cash transfers & prices</h3>
+          <ul style="margin-left:16px">
+            <li>Kandpal et al. (2023). <a href="https://direct.mit.edu/rest/article/105/2/327/100989/Cash-Transfers-Food-Prices-and-Nutrition-Impacts" target="_blank">Cash Transfers, Food Prices, and Nutrition Impacts on Ineligible Children</a>. <em>REStat</em> 105(2).</li>
+            <li><a href="https://voxdev.org/topic/social-protection/price-effects-cash-transfer-programmes-insights-research" target="_blank">VoxDev summary</a></li>
+          </ul>
+          <h3>Poverty data</h3>
+          <ul style="margin-left:16px">
+            <li>World Bank poverty lines: $2.15 (extreme), $3.65 (lower-middle)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Built with <a href="https://plotly.com/javascript/" target="_blank">Plotly.js</a> &middot;
+    <a href="https://github.com/lcrawfurd" target="_blank">Source</a> &middot;
+    March 2026
+  </div>
+</div>
+
+<script>
+// ============================================================
+// MODEL ENGINE
+// ============================================================
+
+const N = 200000;
+let incomes, foodShare, quintileBreaks;
+
+function getVal(id) { return parseFloat(document.getElementById(id).value); }
+function getParams() {
+  return {
+    oilBaseline: getVal('oil_baseline'),
+    oilPrice: getVal('oil_price'),
+    ptTransport: getVal('pt_transport'),
+    ptFert: getVal('pt_fert'),
+    population: getVal('population') * 1e6,
+    meanIncome: getVal('mean_income'),
+    gini: getVal('gini'),
+    foodShares: [getVal('fq1'), getVal('fq2'), getVal('fq3'), getVal('fq4'), getVal('fq5')],
+    cash1Amt: getVal('cash1_amt'),
+    cash1Cov: getVal('cash1_cov') / 100,
+    cash2Amt: getVal('cash2_amt'),
+    cash2Cov: getVal('cash2_cov') / 100,
+    subsidyRate: getVal('subsidy_rate') / 100,
+    povFood: 2.50,
+    povExtreme: 2.15,
+    povModerate: 3.65,
+  };
+}
+
+function solveGiniSigma(targetGini) {
+  // Binary search: Gini = 2*Phi(sigma/sqrt(2)) - 1
+  let lo = 0.01, hi = 3.0;
+  for (let i = 0; i < 100; i++) {
+    const mid = (lo + hi) / 2;
+    const g = 2 * jStat.normal.cdf(mid / Math.sqrt(2), 0, 1) - 1;
+    if (g < targetGini) lo = mid; else hi = mid;
+  }
+  return (lo + hi) / 2;
+}
+
+function generatePopulation(p) {
+  const sigma = solveGiniSigma(p.gini);
+  const mu = Math.log(p.meanIncome) - sigma * sigma / 2;
+  // Seeded pseudo-random (simple LCG for reproducibility)
+  let seed = 42;
+  function rand() { seed = (seed * 1664525 + 1013904223) & 0xFFFFFFFF; return (seed >>> 0) / 0xFFFFFFFF; }
+  // Box-Muller for normal -> exp for lognormal
+  const inc = new Float64Array(N);
+  for (let i = 0; i < N; i += 2) {
+    const u1 = rand() || 1e-10, u2 = rand();
+    const z0 = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+    const z1 = Math.sqrt(-2 * Math.log(u1)) * Math.sin(2 * Math.PI * u2);
+    inc[i] = Math.exp(mu + sigma * z0);
+    if (i + 1 < N) inc[i + 1] = Math.exp(mu + sigma * z1);
+  }
+  // Sort for quintile assignment
+  const sorted = Float64Array.from(inc).sort();
+  const qb = [sorted[Math.floor(N * 0.2)], sorted[Math.floor(N * 0.4)], sorted[Math.floor(N * 0.6)], sorted[Math.floor(N * 0.8)]];
+  const fs = new Float64Array(N);
+  for (let i = 0; i < N; i++) {
+    if (inc[i] <= qb[0]) fs[i] = p.foodShares[0];
+    else if (inc[i] <= qb[1]) fs[i] = p.foodShares[1];
+    else if (inc[i] <= qb[2]) fs[i] = p.foodShares[2];
+    else if (inc[i] <= qb[3]) fs[i] = p.foodShares[3];
+    else fs[i] = p.foodShares[4];
+  }
+  return { incomes: inc, foodShare: fs, quintileBreaks: qb, mu, sigma };
+}
+
+function computeImpacts(p, pop, oilPriceNew, policy, transferUsd, transferCov) {
+  const totalPt = p.ptTransport + p.ptFert;
+  const oilPct = (oilPriceNew - p.oilBaseline) / p.oilBaseline;
+  const foodChange = oilPct * totalPt;
+
+  const effInc = new Float64Array(N);
+  for (let i = 0; i < N; i++) {
+    effInc[i] = pop.incomes[i] * (1 - pop.foodShare[i] * foodChange);
+  }
+
+  let fiscalDaily = 0;
+  if (policy === 'cash') {
+    const threshold = Float64Array.from(pop.incomes).sort()[Math.floor(N * transferCov)];
+    let eligible = 0;
+    for (let i = 0; i < N; i++) {
+      if (pop.incomes[i] <= threshold) { effInc[i] += transferUsd; eligible++; }
+    }
+    fiscalDaily = (eligible / N) * p.population * transferUsd;
+  } else if (policy === 'subsidy') {
+    for (let i = 0; i < N; i++) {
+      effInc[i] += pop.incomes[i] * pop.foodShare[i] * foodChange * p.subsidyRate;
+    }
+    let totalSub = 0;
+    for (let i = 0; i < N; i++) totalSub += pop.incomes[i] * pop.foodShare[i] * foodChange * p.subsidyRate;
+    fiscalDaily = (totalSub / N) * p.population;
+  } else if (policy === 'pricecontrol') {
+    let seed2 = 99;
+    function rand2() { seed2 = (seed2 * 1664525 + 1013904223) & 0xFFFFFFFF; return (seed2 >>> 0) / 0xFFFFFFFF; }
+    for (let i = 0; i < N; i++) {
+      if (rand2() < 0.20) {
+        // shortage
+        effInc[i] = pop.incomes[i] * (1 - pop.foodShare[i] * foodChange) * 0.7;
+      } else {
+        effInc[i] = pop.incomes[i] * (1 - pop.foodShare[i] * foodChange * 0.30);
+      }
+    }
+  }
+
+  let bExt = 0, bFood = 0, bMod = 0, sExt = 0, sFood = 0, sMod = 0;
+  let q1Loss = 0, q5Loss = 0, q1N = 0, q5N = 0, totalLoss = 0;
+  for (let i = 0; i < N; i++) {
+    if (pop.incomes[i] < p.povExtreme) bExt++;
+    if (pop.incomes[i] < p.povFood) bFood++;
+    if (pop.incomes[i] < p.povModerate) bMod++;
+    if (effInc[i] < p.povExtreme) sExt++;
+    if (effInc[i] < p.povFood) sFood++;
+    if (effInc[i] < p.povModerate) sMod++;
+    const loss = pop.foodShare[i] * foodChange;
+    totalLoss += loss;
+    if (pop.incomes[i] <= pop.quintileBreaks[0]) { q1Loss += loss; q1N++; }
+    if (pop.incomes[i] > pop.quintileBreaks[3]) { q5Loss += loss; q5N++; }
+  }
+
+  return {
+    oilPct: oilPct * 100,
+    foodChangePct: foodChange * 100,
+    newExtM: (sExt - bExt) / N * p.population / 1e6,
+    newFoodM: (sFood - bFood) / N * p.population / 1e6,
+    newModM: (sMod - bMod) / N * p.population / 1e6,
+    meanLossPct: totalLoss / N * 100,
+    q1LossPct: (q1N > 0 ? q1Loss / q1N : 0) * 100,
+    q5LossPct: (q5N > 0 ? q5Loss / q5N : 0) * 100,
+    fiscalAnnualM: fiscalDaily * 365 / 1e6,
+  };
+}
+
+// ============================================================
+// UI
+// ============================================================
+
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelector(`#tab-${name}`).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function updateLabels() {
+  document.getElementById('oil_baseline_v').textContent = '$' + getVal('oil_baseline');
+  document.getElementById('oil_price_v').textContent = '$' + getVal('oil_price');
+  document.getElementById('pt_transport_v').textContent = getVal('pt_transport').toFixed(2);
+  document.getElementById('pt_fert_v').textContent = getVal('pt_fert').toFixed(2);
+  document.getElementById('pt_total_v').textContent = (getVal('pt_transport') + getVal('pt_fert')).toFixed(2);
+  document.getElementById('population_v').textContent = getVal('population').toLocaleString();
+  document.getElementById('mean_income_v').textContent = '$' + getVal('mean_income').toFixed(2);
+  document.getElementById('gini_v').textContent = getVal('gini').toFixed(2);
+  document.getElementById('fq1_v').textContent = Math.round(getVal('fq1') * 100) + '%';
+  document.getElementById('fq2_v').textContent = Math.round(getVal('fq2') * 100) + '%';
+  document.getElementById('fq3_v').textContent = Math.round(getVal('fq3') * 100) + '%';
+  document.getElementById('fq4_v').textContent = Math.round(getVal('fq4') * 100) + '%';
+  document.getElementById('fq5_v').textContent = Math.round(getVal('fq5') * 100) + '%';
+  document.getElementById('cash1_amt_v').textContent = '$' + getVal('cash1_amt').toFixed(2);
+  document.getElementById('cash1_cov_v').textContent = getVal('cash1_cov') + '%';
+  document.getElementById('cash2_amt_v').textContent = '$' + getVal('cash2_amt').toFixed(2);
+  document.getElementById('cash2_cov_v').textContent = getVal('cash2_cov') + '%';
+  document.getElementById('subsidy_rate_v').textContent = getVal('subsidy_rate') + '%';
+}
+
+let debounceTimer;
+function update() {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(doUpdate, 80);
+}
+
+function doUpdate() {
+  updateLabels();
+  const p = getParams();
+  const totalPt = p.ptTransport + p.ptFert;
+  const pop = generatePopulation(p);
+  const r = computeImpacts(p, pop, p.oilPrice, 'none', 0, 0);
+
+  // Metrics
+  const oilChg = ((p.oilPrice - p.oilBaseline) / p.oilBaseline * 100).toFixed(0);
+  document.getElementById('metrics').innerHTML = `
+    <div class="metric"><div class="metric-value">+${oilChg}%</div><div class="metric-label">Oil price change</div><div class="metric-sub">$${p.oilBaseline} &rarr; $${p.oilPrice}</div></div>
+    <div class="metric"><div class="metric-value">+${r.foodChangePct.toFixed(1)}%</div><div class="metric-label">Food price increase</div></div>
+    <div class="metric"><div class="metric-value">-${r.q1LossPct.toFixed(1)}%</div><div class="metric-label">Poorest 20% income loss</div></div>
+    <div class="metric"><div class="metric-value" style="color:#d93025">+${r.newFoodM.toFixed(1)}M</div><div class="metric-label">New food insecure</div></div>
+  `;
+
+  // Cost line
+  const rC1 = computeImpacts(p, pop, p.oilPrice, 'cash', p.cash1Amt, p.cash1Cov);
+  const rC2 = computeImpacts(p, pop, p.oilPrice, 'cash', p.cash2Amt, p.cash2Cov);
+  const rSub = computeImpacts(p, pop, p.oilPrice, 'subsidy', 0, 0);
+  document.getElementById('cost-line').innerHTML = `<strong>Policy costs at $${p.oilPrice}:</strong> `
+    + `Cash 1 ($${p.cash1Amt.toFixed(2)}/d, ${Math.round(p.cash1Cov*100)}%): <strong>$${rC1.fiscalAnnualM.toLocaleString(undefined,{maximumFractionDigits:0})}M/yr</strong> &rarr; ${rC1.newFoodM >= 0 ? '+' : ''}${rC1.newFoodM.toFixed(1)}M | `
+    + `Cash 2 ($${p.cash2Amt.toFixed(2)}/d, ${Math.round(p.cash2Cov*100)}%): <strong>$${rC2.fiscalAnnualM.toLocaleString(undefined,{maximumFractionDigits:0})}M/yr</strong> &rarr; ${rC2.newFoodM >= 0 ? '+' : ''}${rC2.newFoodM.toFixed(1)}M | `
+    + `Food subsidy (${Math.round(p.subsidyRate*100)}%): <strong>$${rSub.fiscalAnnualM.toLocaleString(undefined,{maximumFractionDigits:0})}M/yr</strong> &rarr; ${rSub.newFoodM >= 0 ? '+' : ''}${rSub.newFoodM.toFixed(1)}M`;
+
+  // --- CHART 1: Income loss by quintile ---
+  const oilRange = [];
+  for (let op = p.oilBaseline; op <= 150; op += 2) oilRange.push(op);
+  const qNames = ['Q1 (poorest)', 'Q2', 'Q3', 'Q4', 'Q5 (richest)'];
+  const qColors = ['#d62728', '#ff7f0e', '#bcbd22', '#2ca02c', '#1f77b4'];
+  const traces1 = p.foodShares.map((fs, i) => ({
+    x: oilRange, y: oilRange.map(op => (op - p.oilBaseline) / p.oilBaseline * totalPt * fs * 100),
+    name: qNames[i], line: { color: qColors[i], width: 2 }, type: 'scatter'
+  }));
+  Plotly.react('chart1', traces1, {
+    title: 'A. Real income loss by quintile', xaxis: { title: 'Oil price ($/barrel)' }, yaxis: { title: 'Real income loss (%)' },
+    height: 370, margin: { t: 40, b: 40, l: 50, r: 20 },
+    shapes: [{ type: 'line', x0: p.oilPrice, x1: p.oilPrice, y0: 0, y1: 1, yref: 'paper', line: { dash: 'dash', color: 'gray' } }],
+    legend: { font: { size: 10 } }
+  }, { responsive: true });
+
+  // --- CHART 2: New poor by oil price ---
+  const newExt = [], newFood = [], newMod = [];
+  for (const op of oilRange) {
+    const res = computeImpacts(p, pop, op, 'none', 0, 0);
+    newExt.push(res.newExtM); newFood.push(res.newFoodM); newMod.push(res.newModM);
+  }
+  Plotly.react('chart2', [
+    { x: oilRange, y: newExt, name: `Extreme ($${p.povExtreme})`, line: { color: 'darkred', width: 2 }, type: 'scatter' },
+    { x: oilRange, y: newFood, name: `Food insecure ($${p.povFood})`, line: { color: 'orange', width: 2 }, type: 'scatter' },
+    { x: oilRange, y: newMod, name: `Moderate ($${p.povModerate})`, line: { color: 'steelblue', width: 2 }, type: 'scatter' },
+  ], {
+    title: 'B. New poor by oil price', xaxis: { title: 'Oil price ($/barrel)' }, yaxis: { title: 'Additional poor (millions)' },
+    height: 370, margin: { t: 40, b: 40, l: 50, r: 20 },
+    shapes: [{ type: 'line', x0: p.oilPrice, x1: p.oilPrice, y0: 0, y1: 1, yref: 'paper', line: { dash: 'dash', color: 'gray' } }],
+    legend: { font: { size: 10 } }
+  }, { responsive: true });
+
+  // --- CHART 3: Policy comparison ---
+  const rPC = computeImpacts(p, pop, p.oilPrice, 'pricecontrol', 0, 0);
+  const polLabels = ['No intervention', `Cash ($${p.cash1Amt.toFixed(2)}, ${Math.round(p.cash1Cov*100)}%)`,
+    `Cash ($${p.cash2Amt.toFixed(2)}, ${Math.round(p.cash2Cov*100)}%)`, `Food sub. (${Math.round(p.subsidyRate*100)}%)`, 'Price controls'];
+  const polVals = [r.newFoodM, rC1.newFoodM, rC2.newFoodM, rSub.newFoodM, rPC.newFoodM];
+  const polCosts = [0, rC1.fiscalAnnualM, rC2.fiscalAnnualM, rSub.fiscalAnnualM, 0];
+  Plotly.react('chart3', [
+    { x: polLabels, y: polVals, type: 'bar', name: 'New food insecure (M)',
+      marker: { color: ['#d62728', '#2ca02c', '#2ca02c', '#1f77b4', '#ff7f0e'] },
+      text: polVals.map(v => (v >= 0 ? '+' : '') + v.toFixed(1) + 'M'), textposition: 'outside' },
+    { x: polLabels, y: polCosts, type: 'scatter', mode: 'markers+text', name: 'Fiscal cost ($M/yr)', yaxis: 'y2',
+      marker: { size: 10, color: 'black', symbol: 'diamond' },
+      text: polCosts.map(c => c > 0 ? '$' + Math.round(c).toLocaleString() + 'M' : ''),
+      textposition: 'top center', textfont: { size: 9 } }
+  ], {
+    title: 'C. Policy comparison', height: 370, margin: { t: 40, b: 80, l: 50, r: 50 },
+    yaxis: { title: 'Additional food insecure (M)' },
+    yaxis2: { title: 'Fiscal cost ($M/yr)', overlaying: 'y', side: 'right' },
+    legend: { font: { size: 9 }, orientation: 'h', y: -0.3 }
+  }, { responsive: true });
+
+  // --- CHART 4: Sensitivity ---
+  const ptRange = [];
+  for (let pt = 0.05; pt <= 0.50; pt += 0.01) ptRange.push(pt);
+  const sensFood = ptRange.map(pt => {
+    const fc = (p.oilPrice - p.oilBaseline) / p.oilBaseline * pt;
+    let bF = 0, sF = 0;
+    for (let i = 0; i < N; i++) {
+      if (pop.incomes[i] < p.povFood) bF++;
+      if (pop.incomes[i] * (1 - pop.foodShare[i] * fc) < p.povFood) sF++;
+    }
+    return (sF - bF) / N * p.population / 1e6;
+  });
+  Plotly.react('chart4', [{
+    x: ptRange, y: sensFood, type: 'scatter', fill: 'tozeroy',
+    line: { color: 'darkorange', width: 3 }, fillcolor: 'rgba(255,165,0,0.1)'
+  }], {
+    title: 'D. Sensitivity to pass-through', xaxis: { title: 'Pass-through elasticity' }, yaxis: { title: 'New food insecure (M)' },
+    height: 370, margin: { t: 40, b: 40, l: 50, r: 20 },
+    shapes: [{ type: 'line', x0: totalPt, x1: totalPt, y0: 0, y1: 1, yref: 'paper', line: { dash: 'dash', color: 'red' } }],
+    annotations: [{ x: totalPt, y: 0.95, yref: 'paper', text: `Baseline (${totalPt.toFixed(2)})`, showarrow: false, font: { size: 10, color: 'red' } }]
+  }, { responsive: true });
+
+  // --- Income distribution ---
+  const bins = [];
+  for (let b = 0; b < 20; b += 0.2) bins.push(b);
+  const hist = new Array(bins.length - 1).fill(0);
+  for (let i = 0; i < N; i++) {
+    const idx = Math.floor(pop.incomes[i] / 0.2);
+    if (idx >= 0 && idx < hist.length) hist[idx]++;
+  }
+  const binCenters = bins.slice(0, -1).map((b, i) => b + 0.1);
+  const density = hist.map(h => h / N / 0.2);
+  Plotly.react('chart_dist', [{
+    x: binCenters, y: density, type: 'bar', marker: { color: 'steelblue', opacity: 0.6 }
+  }], {
+    title: 'Income distribution', xaxis: { title: 'Daily income ($ PPP)' }, yaxis: { title: 'Density' },
+    height: 250, margin: { t: 40, b: 40, l: 50, r: 20 },
+    shapes: [
+      { type: 'line', x0: p.povExtreme, x1: p.povExtreme, y0: 0, y1: 1, yref: 'paper', line: { dash: 'dash', color: 'red' } },
+      { type: 'line', x0: p.povFood, x1: p.povFood, y0: 0, y1: 1, yref: 'paper', line: { dash: 'dash', color: 'orange' } },
+      { type: 'line', x0: p.povModerate, x1: p.povModerate, y0: 0, y1: 1, yref: 'paper', line: { dash: 'dash', color: 'gray' } },
+    ],
+    annotations: [
+      { x: p.povExtreme, y: 0.95, yref: 'paper', text: `$${p.povExtreme}`, showarrow: false, font: { size: 9, color: 'red' } },
+      { x: p.povFood, y: 0.85, yref: 'paper', text: `$${p.povFood}`, showarrow: false, font: { size: 9, color: 'orange' } },
+      { x: p.povModerate, y: 0.95, yref: 'paper', text: `$${p.povModerate}`, showarrow: false, font: { size: 9, color: 'gray' } },
+    ]
+  }, { responsive: true });
+
+  // --- Policy table ---
+  const policies = [
+    { name: 'No intervention', r: r, cls: '' },
+    { name: `Cash ($${p.cash1Amt.toFixed(2)}/d, ${Math.round(p.cash1Cov*100)}%)`, r: rC1, cls: 'good' },
+    { name: `Cash ($${p.cash2Amt.toFixed(2)}/d, ${Math.round(p.cash2Cov*100)}%)`, r: rC2, cls: 'good' },
+    { name: `Food subsidy (${Math.round(p.subsidyRate*100)}%)`, r: rSub, cls: '' },
+    { name: 'Price controls', r: rPC, cls: 'bad' },
+  ];
+  const verdicts = ['Baseline', 'Targeted', 'Targeted', 'Middle ground', 'WORSE than nothing'];
+  let tbl = '<tr><th>Policy</th><th>New food insecure (M)</th><th>Fiscal cost ($M/yr)</th><th>Verdict</th></tr>';
+  policies.forEach((pol, i) => {
+    tbl += `<tr class="${pol.cls}"><td>${pol.name}</td><td>${pol.r.newFoodM >= 0 ? '+' : ''}${pol.r.newFoodM.toFixed(1)}M</td><td>$${Math.round(pol.r.fiscalAnnualM).toLocaleString()}M</td><td>${verdicts[i]}</td></tr>`;
+  });
+  document.getElementById('policy_table').innerHTML = tbl;
+
+  // --- Model tab numbers ---
+  document.getElementById('step1_numbers').innerHTML = `With oil at <strong>$${p.oilPrice}</strong> (up from $${p.oilBaseline}), the oil price change is <strong>+${oilChg}%</strong>. With pass-through of <strong>${totalPt.toFixed(2)}</strong>, food prices rise <strong>+${r.foodChangePct.toFixed(1)}%</strong>.`;
+  document.getElementById('step2_numbers').innerHTML = `The poorest spend <strong>${Math.round(p.foodShares[0]*100)}%</strong> of income on food vs <strong>${Math.round(p.foodShares[4]*100)}%</strong> for the richest &mdash; a <strong>${(p.foodShares[0]/p.foodShares[4]).toFixed(1)}&times;</strong> difference. So Q1 loses <strong>${r.q1LossPct.toFixed(1)}%</strong> of real income vs <strong>${r.q5LossPct.toFixed(1)}%</strong> for Q5.`;
+  document.getElementById('step3_numbers').innerHTML = `Distribution: &mu; = ${pop.mu.toFixed(3)}, &sigma; = ${pop.sigma.toFixed(3)} (median income = <strong>$${Math.exp(pop.mu).toFixed(2)}</strong>/day). Result: <strong>+${r.newFoodM.toFixed(1)}M</strong> new food insecure.`;
+
+  // --- Code tab elasticities ---
+  const fc = (p.oilPrice - p.oilBaseline) / p.oilBaseline * totalPt;
+  document.getElementById('elasticity_code').innerHTML = `<span class="comment">// Current parameter values</span>
+transport_passthrough = <span class="number">${p.ptTransport.toFixed(2)}</span>   <span class="comment">// oil -> transport -> food price</span>
+fertilizer_passthrough = <span class="number">${p.ptFert.toFixed(2)}</span>  <span class="comment">// oil -> fertilizer -> food price</span>
+total_passthrough = <span class="number">${totalPt.toFixed(2)}</span>
+
+<span class="comment">// At current oil price ($${p.oilPrice}, up from $${p.oilBaseline}):</span>
+oil_pct_change = ($${p.oilPrice} - $${p.oilBaseline}) / $${p.oilBaseline} = <span class="number">${((p.oilPrice-p.oilBaseline)/p.oilBaseline*100).toFixed(1)}%</span>
+food_price_change = <span class="number">${((p.oilPrice-p.oilBaseline)/p.oilBaseline*100).toFixed(1)}%</span> x <span class="number">${totalPt.toFixed(2)}</span> = <span class="number">${(fc*100).toFixed(1)}%</span>
+
+<span class="comment">// Income loss by quintile:</span>
+Q1_loss = <span class="number">${Math.round(p.foodShares[0]*100)}%</span> x <span class="number">${(fc*100).toFixed(1)}%</span> = <span class="number">${(p.foodShares[0]*fc*100).toFixed(1)}%</span>  <span class="comment">// hardest hit</span>
+Q5_loss = <span class="number">${Math.round(p.foodShares[4]*100)}%</span> x <span class="number">${(fc*100).toFixed(1)}%</span> = <span class="number">${(p.foodShares[4]*fc*100).toFixed(1)}%</span>`;
+}
+
+// Wire up all inputs
+document.querySelectorAll('input').forEach(el => el.addEventListener('input', update));
+
+// Initial render
+update();
+</script>
+</body>
+</html>
