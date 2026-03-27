@@ -562,7 +562,7 @@ function doUpdate() {
     yaxis: { title: 'Additional food insecure (M)' },
     showlegend: false,
     annotations: [{ x: 0, y: r.newFoodM, xref: 'x', yref: 'y', text: '', showarrow: false }],
-    shapes: [{ type: 'line', x0: 0, x1: Math.max(...policies.map(p => p.cost/1000)) * 1.2, y0: r.newFoodM, y1: r.newFoodM,
+    shapes: [{ type: 'line', x0: 0, x1: Math.max(...policies.map(d => d.cost/1000)) * 1.2, y0: r.newFoodM, y1: r.newFoodM,
       line: { color: '#d62728', width: 1, dash: 'dot' } }]
   }, { responsive: true });
 
@@ -616,7 +616,7 @@ function doUpdate() {
   }, { responsive: true });
 
   // --- Policy table ---
-  const policies = [
+  const polRows = [
     { name: 'No intervention', r: r, cls: '' },
     { name: `Cash ($${p.cash1Amt.toFixed(2)}/d, ${Math.round(p.cash1Cov*100)}%)`, r: rC1, cls: 'good' },
     { name: `Cash ($${p.cash2Amt.toFixed(2)}/d, ${Math.round(p.cash2Cov*100)}%)`, r: rC2, cls: 'good' },
@@ -625,7 +625,7 @@ function doUpdate() {
   ];
   const verdicts = ['Baseline', 'Targeted', 'Targeted', 'Middle ground', 'WORSE than nothing'];
   let tbl = '<tr><th>Policy</th><th>New food insecure (M)</th><th>Fiscal cost ($M/yr)</th><th>Verdict</th></tr>';
-  policies.forEach((pol, i) => {
+  polRows.forEach((pol, i) => {
     tbl += `<tr class="${pol.cls}"><td>${pol.name}</td><td>${pol.r.newFoodM >= 0 ? '+' : ''}${pol.r.newFoodM.toFixed(1)}M</td><td>$${Math.round(pol.r.fiscalAnnualM).toLocaleString()}M</td><td>${verdicts[i]}</td></tr>`;
   });
   document.getElementById('policy_table').innerHTML = tbl;
