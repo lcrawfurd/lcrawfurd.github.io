@@ -542,25 +542,28 @@ function doUpdate() {
     legend: { font: { size: 10 } }
   }, { responsive: true });
 
-  // --- CHART 3: Policy comparison ---
+  // --- CHART 3: Policy comparison (scatterplot: cost vs impact) ---
   const rPC = computeImpacts(p, pop, p.oilPrice, 'pricecontrol', 0, 0);
-  const polLabels = ['No intervention', `Cash ($${p.cash1Amt.toFixed(2)}, ${Math.round(p.cash1Cov*100)}%)`,
-    `Cash ($${p.cash2Amt.toFixed(2)}, ${Math.round(p.cash2Cov*100)}%)`, `Food sub. (${Math.round(p.subsidyRate*100)}%)`, 'Price controls'];
-  const polVals = [r.newFoodM, rC1.newFoodM, rC2.newFoodM, rSub.newFoodM, rPC.newFoodM];
-  const polCosts = [0, rC1.fiscalAnnualM, rC2.fiscalAnnualM, rSub.fiscalAnnualM, 0];
-  Plotly.react('chart3', [
-    { x: polLabels, y: polVals, type: 'bar', name: 'New food insecure (M)',
-      marker: { color: ['#d62728', '#2ca02c', '#2ca02c', '#1f77b4', '#ff7f0e'] },
-      text: polVals.map(v => (v >= 0 ? '+' : '') + v.toFixed(1) + 'M'), textposition: 'outside' },
-    { x: polLabels, y: polCosts, type: 'scatter', mode: 'markers+text', name: 'Fiscal cost ($M/yr)', yaxis: 'y2',
-      marker: { size: 10, color: 'black', symbol: 'diamond' },
-      text: polCosts.map(c => c > 0 ? '$' + Math.round(c).toLocaleString() + 'M' : ''),
-      textposition: 'top center', textfont: { size: 9 } }
-  ], {
-    title: 'C. Policy comparison', height: 370, margin: { t: 40, b: 80, l: 50, r: 50 },
+  const policies = [
+    { label: 'No intervention', cost: 0, impact: r.newFoodM, color: '#d62728', symbol: 'circle' },
+    { label: `Cash 1 ($${p.cash1Amt.toFixed(2)}, ${Math.round(p.cash1Cov*100)}%)`, cost: rC1.fiscalAnnualM, impact: rC1.newFoodM, color: '#2ca02c', symbol: 'circle' },
+    { label: `Cash 2 ($${p.cash2Amt.toFixed(2)}, ${Math.round(p.cash2Cov*100)}%)`, cost: rC2.fiscalAnnualM, impact: rC2.newFoodM, color: '#17becf', symbol: 'circle' },
+    { label: `Food subsidy (${Math.round(p.subsidyRate*100)}%)`, cost: rSub.fiscalAnnualM, impact: rSub.newFoodM, color: '#1f77b4', symbol: 'diamond' },
+    { label: 'Price controls', cost: 0, impact: rPC.newFoodM, color: '#ff7f0e', symbol: 'x' },
+  ];
+  Plotly.react('chart3', policies.map(pol => ({
+    x: [pol.cost / 1000], y: [pol.impact], type: 'scatter', mode: 'markers+text', name: pol.label,
+    marker: { size: 16, color: pol.color, symbol: pol.symbol, line: { width: 1, color: '#333' } },
+    text: [pol.label], textposition: pol.cost === 0 ? 'middle right' : 'top center',
+    textfont: { size: 10 }, hovertemplate: `${pol.label}<br>Cost: $%{x:.0f}B/yr<br>New food insecure: %{y:.1f}M<extra></extra>`
+  })), {
+    title: 'C. Policy comparison: cost vs impact', height: 400, margin: { t: 40, b: 60, l: 70, r: 30 },
+    xaxis: { title: 'Fiscal cost ($B/yr)', rangemode: 'tozero' },
     yaxis: { title: 'Additional food insecure (M)' },
-    yaxis2: { title: 'Fiscal cost ($M/yr)', overlaying: 'y', side: 'right' },
-    legend: { font: { size: 9 }, orientation: 'h', y: -0.3 }
+    showlegend: false,
+    annotations: [{ x: 0, y: r.newFoodM, xref: 'x', yref: 'y', text: '', showarrow: false }],
+    shapes: [{ type: 'line', x0: 0, x1: Math.max(...policies.map(p => p.cost/1000)) * 1.2, y0: r.newFoodM, y1: r.newFoodM,
+      line: { color: '#d62728', width: 1, dash: 'dot' } }]
   }, { responsive: true });
 
   // --- CHART 4: Sensitivity ---
