@@ -114,6 +114,9 @@
       <div class="slider-row"><input type="range" id="cash2_amt" min="0" max="2" value="0.25" step="0.05"><span class="val" id="cash2_amt_v">$0.25</span></div>
       <label>Cash 2: coverage (%)</label>
       <div class="slider-row"><input type="range" id="cash2_cov" min="0" max="100" value="20" step="5"><span class="val" id="cash2_cov_v">20%</span></div>
+      <label>Share of transfer spent on food</label>
+      <div class="slider-row"><input type="range" id="transfer_food_share" min="0.03" max="1.00" value="0.50" step="0.01"><span class="val" id="transfer_food_share_v">50%</span></div>
+      <p style="font-size:0.75em;color:var(--muted);margin:2px 0 4px">BKT (2026) estimate 0.03 for routine transfers. In a food crisis this is likely higher &mdash; default 0.50 reflects partial offset. Set to 1.0 for full dollar-for-dollar.</p>
       <label>Food subsidy absorption (%)</label>
       <div class="slider-row"><input type="range" id="subsidy_rate" min="0" max="100" value="50" step="5"><span class="val" id="subsidy_rate_v">50%</span></div>
     </div>
@@ -214,6 +217,10 @@
           </div>
 
           <div class="warning">
+            <strong>How much of a cash transfer goes to food? (Bellemare, Kandpal &amp; Thomas 2026):</strong> Using 5 RCTs across 4 countries, BKT estimate the income elasticity of food expenditure at just 0.03 for routine transfers &mdash; meaning only 3% of extra income goes to food. In a crisis the share is likely higher (households are cutting meals, not optimising). We default to 50% but this is an assumption. Use the &ldquo;Share of transfer spent on food&rdquo; slider to explore. At 0.03, cash transfers are almost ineffective at reducing food insecurity; at 1.0, they work dollar-for-dollar.
+          </div>
+
+          <div class="warning">
             <strong>Price controls don't work:</strong> High prices reflect real scarcity. Countries that tried to freeze food/fuel prices saw shortages, queues, smuggling, and black markets. In the model, price controls are <em>worse than doing nothing</em>.
           </div>
         </div>
@@ -283,6 +290,7 @@ foodShares = [<span class="number">0.65</span>, <span class="number">0.55</span>
           <ul style="margin-left:16px">
             <li>Kandpal et al. (2023). <a href="https://direct.mit.edu/rest/article/105/2/327/100989/Cash-Transfers-Food-Prices-and-Nutrition-Impacts" target="_blank">Cash Transfers, Food Prices, and Nutrition Impacts on Ineligible Children</a>. <em>REStat</em> 105(2).</li>
             <li><a href="https://voxdev.org/topic/social-protection/price-effects-cash-transfer-programmes-insights-research" target="_blank">VoxDev summary</a></li>
+            <li>Bellemare, Kandpal &amp; Thomas (2026). <em>Income and the Demand for Food Among the Poor</em>. Income elasticity of food expenditure = 0.03 for routine transfers to poorest households (5 RCTs across Mexico, Nicaragua, Philippines, Uganda).</li>
           </ul>
           <h3>Poverty data</h3>
           <ul style="margin-left:16px">
@@ -324,6 +332,7 @@ function getParams() {
     cash2Amt: getVal('cash2_amt'),
     cash2Cov: getVal('cash2_cov') / 100,
     subsidyRate: getVal('subsidy_rate') / 100,
+    transferFoodShare: getVal('transfer_food_share'),
     povFood: 2.50,
     povExtreme: 2.15,
     povModerate: 3.65,
@@ -385,7 +394,7 @@ function computeImpacts(p, pop, oilPriceNew, policy, transferUsd, transferCov) {
     const threshold = Float64Array.from(pop.incomes).sort()[Math.floor(N * transferCov)];
     let eligible = 0;
     for (let i = 0; i < N; i++) {
-      if (pop.incomes[i] <= threshold) { effInc[i] += transferUsd; eligible++; }
+      if (pop.incomes[i] <= threshold) { effInc[i] += transferUsd * p.transferFoodShare; eligible++; }
     }
     fiscalDaily = (eligible / N) * p.population * transferUsd;
   } else if (policy === 'subsidy') {
@@ -465,6 +474,7 @@ function updateLabels() {
   document.getElementById('cash1_cov_v').textContent = getVal('cash1_cov') + '%';
   document.getElementById('cash2_amt_v').textContent = '$' + getVal('cash2_amt').toFixed(2);
   document.getElementById('cash2_cov_v').textContent = getVal('cash2_cov') + '%';
+  document.getElementById('transfer_food_share_v').textContent = Math.round(getVal('transfer_food_share') * 100) + '%';
   document.getElementById('subsidy_rate_v').textContent = getVal('subsidy_rate') + '%';
 }
 
