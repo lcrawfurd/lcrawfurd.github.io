@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oil Shock Impact on Developing Countries</title>
+<script src="https://cdn.plot.ly/plotly-2.35.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jstat@1.9.6/dist/jstat.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #fff; color: #202124; line-height: 1.6; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 20px; }
+  h2 { font-size: 1.15em; margin: 24px 0 6px; color: #1a73e8; }
+  .chart-box { border: 1px solid #dadce0; border-radius: 8px; padding: 8px; margin: 16px 0; }
+  .controls { background: #f8f9fa; border: 1px solid #dadce0; border-radius: 8px; padding: 14px 18px; margin: 16px 0; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
+  .controls label { font-size: 0.85em; color: #5f6368; }
+  .ctrl { display: flex; align-items: center; gap: 6px; }
+  .ctrl input[type="range"] { width: 120px; accent-color: #1a73e8; }
+  .ctrl .val { font-weight: 600; color: #1a73e8; font-size: 0.9em; min-width: 40px; }
+  .note { font-size: 0.82em; color: #5f6368; margin: 6px 0; line-height: 1.4; }
+  .source { font-size: 0.78em; color: #999; margin-top: 4px; }
+  a { color: #1a73e8; }
+  .footnote { font-size: 0.8em; color: #5f6368; border-top: 1px solid #dadce0; margin-top: 24px; padding-top: 12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="controls">
+    <div class="ctrl">
+      <label>Oil price:&nbsp;</label>
+      <input type="range" id="oil_price" min="71" max="150" value="110" step="1">
+      <span class="val" id="oil_v">$110</span>
+    </div>
+    <div class="ctrl">
+      <label>Pass-through:&nbsp;</label>
+      <input type="range" id="passthrough" min="0.05" max="0.40" value="0.22" step="0.01">
+      <span class="val" id="pt_v">0.22</span>
+    </div>
+    <div class="note" style="width:100%">Drag the sliders to explore different scenarios. Baseline oil price: $71/barrel (late Feb 2026). Pass-through: how much a 1% oil rise increases food prices (literature range: 0.10–0.40; global average ~0.22).</div>
+  </div>
+
+  <h2>Figure 1. The poor are hit hardest</h2>
+  <p class="note">Real income loss from the oil price shock, by income quintile. The poorest spend 65% of income on food vs 20% for the richest — so the same food price increase hits them 3× harder.</p>
+  <div class="chart-box"><div id="fig1"></div></div>
+  <p class="source">Food expenditure shares from World Bank household surveys (SSA median). Pass-through from Baffes (2007), Dillon &amp; Barrett (2016).</p>
+
+  <h2>Figure 2. Policy comparison</h2>
+  <p class="note">Fiscal cost vs impact on food insecurity. Points further down and to the left are better (fewer new hungry people, lower cost). Cash transfers are more cost-effective than untargeted food subsidies because they reach the people at the margin.</p>
+  <div class="chart-box"><div id="fig2"></div></div>
+  <p class="source">Simulation of 200,000 synthetic individuals. <a href="https://lcrawfurd.github.io/iran-oil-shock.html" target="_blank">Full interactive model →</a></p>
+
+  <div class="footnote">
+    <strong>Model:</strong> Log-normal income distribution (mean $5.50/day PPP, Gini 0.40) calibrated to reproduce the <a href="https://news.un.org/en/story/2026/03/1167147" target="_blank">WFP estimate</a> of 45M additional people in acute hunger. Cash transfer: $0.15/day to bottom 30%. Food subsidy: govt absorbs 50% of food price increase. Only 50% of cash transfer assumed to go to food spending (Bellemare, Kandpal &amp; Thomas 2026). <a href="https://lcrawfurd.github.io/iran-oil-shock.html" target="_blank">Explore all assumptions →</a>
+  </div>
+</div>
+
+<script>
+const N = 200000;
+const OIL_BASE = 71;
+const FOOD_SHARES = [0.65, 0.55, 0.45, 0.35, 0.20];
+const Q_NAMES = ['Q1 (poorest 20%)', 'Q2', 'Q3', 'Q4', 'Q5 (richest 20%)'];
+const Q_COLORS = ['#d62728', '#ff7f0e', '#bcbd22', '#2ca02c', '#1f77b4'];
+const PARAMS = {
+  population: 2300e6, meanIncome: 5.50, gini: 0.40,
+  povFood: 2.50, povExtreme: 2.15, povModerate: 3.65,
+  cash1Amt: 0.15, cash1Cov: 0.30,
+  subsidyRate: 0.50, transferFoodShare: 0.50,
+};
+
+function solveGiniSigma(g) {
+  let lo = 0.01, hi = 3;
+  for (let i = 0; i < 100; i++) {
+    const m = (lo+hi)/2;
+    (2*jStat.normal.cdf(m/Math.sqrt(2),0,1)-1) < g ? lo=m : hi=m;
+  }
+  return (lo+hi)/2;
+}
+
+let pop;
+function genPop() {
+  const sigma = solveGiniSigma(PARAMS.gini);
+  const mu = Math.log(PARAMS.meanIncome) - sigma*sigma/2;
+  let seed = 42;
+  function rand() { seed=(seed*1664525+1013904223)&0xFFFFFFFF; return (seed>>>0)/0xFFFFFFFF; }
+  const inc = new Float64Array(N);
+  for (let i=0;i<N;i+=2) {
+    const u1=rand()||1e-10, u2=rand();
+    const z0=Math.sqrt(-2*Math.log(u1))*Math.cos(2*Math.PI*u2);
+    const z1=Math.sqrt(-2*Math.log(u1))*Math.sin(2*Math.PI*u2);
+    inc[i]=Math.exp(mu+sigma*z0);
+    if(i+1<N) inc[i+1]=Math.exp(mu+sigma*z1);
+  }
+  const sorted = Float64Array.from(inc).sort();
+  const qb = [sorted[Math.floor(N*0.2)],sorted[Math.floor(N*0.4)],sorted[Math.floor(N*0.6)],sorted[Math.floor(N*0.8)]];
+  const fs = new Float64Array(N);
+  for (let i=0;i<N;i++) {
+    if(inc[i]<=qb[0]) fs[i]=FOOD_SHARES[0];
+    else if(inc[i]<=qb[1]) fs[i]=FOOD_SHARES[1];
+    else if(inc[i]<=qb[2]) fs[i]=FOOD_SHARES[2];
+    else if(inc[i]<=qb[3]) fs[i]=FOOD_SHARES[3];
+    else fs[i]=FOOD_SHARES[4];
+  }
+  return {incomes:inc, foodShare:fs, quintileBreaks:qb};
+}
+
+function impacts(oilPrice, pt, policy, transferUsd, transferCov) {
+  const foodChange = (oilPrice-OIL_BASE)/OIL_BASE * pt;
+  const effInc = new Float64Array(N);
+  for(let i=0;i<N;i++) effInc[i] = pop.incomes[i]*(1-pop.foodShare[i]*foodChange);
+  let fiscalDaily=0;
+  if(policy==='cash') {
+    const th = Float64Array.from(pop.incomes).sort()[Math.floor(N*transferCov)];
+    let elig=0;
+    for(let i=0;i<N;i++) { if(pop.incomes[i]<=th){effInc[i]+=transferUsd*PARAMS.transferFoodShare;elig++;} }
+    fiscalDaily=(elig/N)*PARAMS.population*transferUsd;
+  } else if(policy==='subsidy') {
+    for(let i=0;i<N;i++) effInc[i]+=pop.incomes[i]*pop.foodShare[i]*foodChange*PARAMS.subsidyRate;
+    let ts=0; for(let i=0;i<N;i++) ts+=pop.incomes[i]*pop.foodShare[i]*foodChange*PARAMS.subsidyRate;
+    fiscalDaily=(ts/N)*PARAMS.population;
+  } else if(policy==='pricecontrol') {
+    let s2=99; function r2(){s2=(s2*1664525+1013904223)&0xFFFFFFFF;return(s2>>>0)/0xFFFFFFFF;}
+    for(let i=0;i<N;i++){if(r2()<0.20){effInc[i]=pop.incomes[i]*(1-pop.foodShare[i]*foodChange)*0.7;}else{effInc[i]=pop.incomes[i]*(1-pop.foodShare[i]*foodChange*0.30);}}
+  }
+  let bF=0,sF=0;
+  for(let i=0;i<N;i++){if(pop.incomes[i]<PARAMS.povFood)bF++;if(effInc[i]<PARAMS.povFood)sF++;}
+  return { newFoodM:(sF-bF)/N*PARAMS.population/1e6, fiscalAnnualM:fiscalDaily*365/1e6, foodChangePct:foodChange*100 };
+}
+
+pop = genPop();
+
+function getVal(id){return parseFloat(document.getElementById(id).value);}
+
+let timer;
+function update(){clearTimeout(timer);timer=setTimeout(doUpdate,80);}
+
+function doUpdate() {
+  const oilPrice = getVal('oil_price');
+  const pt = getVal('passthrough');
+  document.getElementById('oil_v').textContent = '$'+oilPrice;
+  document.getElementById('pt_v').textContent = pt.toFixed(2);
+
+  // FIGURE 1: Income loss by quintile (bar chart at current oil price)
+  const foodPctChange = (oilPrice-OIL_BASE)/OIL_BASE * pt;
+  const losses = FOOD_SHARES.map(fs => fs * foodPctChange * 100);
+
+  Plotly.react('fig1', [{
+    x: Q_NAMES, y: losses.map(l => -l), type: 'bar',
+    marker: { color: Q_COLORS },
+    text: losses.map(l => '-'+l.toFixed(1)+'%'),
+    textposition: 'outside', textfont: { size: 12, color: '#333' },
+    hovertemplate: '%{x}<br>Real income loss: %{text}<extra></extra>'
+  }], {
+    height: 380, margin: {t:20, b:80, l:60, r:20},
+    yaxis: { title: 'Real income change (%)', zeroline: true, zerolinecolor: '#999' },
+    xaxis: { tickfont: { size: 11 } },
+    annotations: [{
+      x: 0.5, y: 1.02, xref: 'paper', yref: 'paper', showarrow: false,
+      text: `Oil $${oilPrice}/barrel → food prices +${foodPctChange.toFixed(1)*100>0?(foodPctChange*100).toFixed(1):'0'}%`,
+      font: { size: 13, color: '#333' }
+    }]
+  }, {responsive:true});
+
+  // FIGURE 2: Policy scatterplot
+  const rNone = impacts(oilPrice, pt, 'none', 0, 0);
+  const rC1 = impacts(oilPrice, pt, 'cash', PARAMS.cash1Amt, PARAMS.cash1Cov);
+  const rSub = impacts(oilPrice, pt, 'subsidy', 0, 0);
+  const rPC = impacts(oilPrice, pt, 'pricecontrol', 0, 0);
+
+  const pols = [
+    { label:'No intervention', x:0, y:rNone.newFoodM, color:'#d62728', sym:'circle' },
+    { label:'Cash transfer\n($0.15/d, bottom 30%)', x:rC1.fiscalAnnualM/1000, y:rC1.newFoodM, color:'#2ca02c', sym:'circle' },
+    { label:'Food subsidy\n(50% absorbed)', x:rSub.fiscalAnnualM/1000, y:rSub.newFoodM, color:'#1f77b4', sym:'diamond' },
+    { label:'Price controls', x:0, y:rPC.newFoodM, color:'#ff7f0e', sym:'x' },
+  ];
+
+  const traces2 = pols.map(d => ({
+    x:[d.x], y:[d.y], type:'scatter', mode:'markers+text', name:d.label.replace('\n',' '),
+    marker:{size:18, color:d.color, symbol:d.sym, line:{width:1.5, color:'#333'}},
+    text:[d.label], textposition: d.x===0 ? 'middle right' : 'top center',
+    textfont:{size:11}, showlegend:false,
+    hovertemplate: d.label.replace('\n',' ')+'<br>Cost: $%{x:.0f}B/yr<br>New food insecure: +%{y:.1f}M<extra></extra>'
+  }));
+
+  const maxCost = Math.max(...pols.map(d=>d.x)) * 1.3 || 1;
+
+  Plotly.react('fig2', traces2, {
+    height: 420, margin: {t:20, b:50, l:70, r:30},
+    xaxis: { title:'Fiscal cost ($B/year)', rangemode:'tozero', range:[-maxCost*0.15, maxCost*1.1] },
+    yaxis: { title:'Additional food insecure (millions)' },
+    shapes: [{
+      type:'line', x0:-maxCost*0.15, x1:maxCost*1.1, y0:rNone.newFoodM, y1:rNone.newFoodM,
+      line:{color:'#d62728', width:1, dash:'dot'}
+    }],
+    annotations: [{
+      x: maxCost*0.9, y: rNone.newFoodM, showarrow:false,
+      text:'← no intervention baseline', font:{size:9, color:'#d62728'}, yshift:12
+    }]
+  }, {responsive:true});
+}
+
+document.querySelectorAll('input').forEach(el => el.addEventListener('input', update));
+update();
+</script>
+</body>
+</html>
