@@ -8,19 +8,19 @@
 <script src="https://cdn.jsdelivr.net/npm/jstat@1.9.6/dist/jstat.min.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #fff; color: #202124; line-height: 1.6; }
+  body { font-family: 'Bitter', Georgia, serif; background: #F8F8F8; color: #1A272A; line-height: 1.6; }
   .wrap { max-width: 720px; margin: 0 auto; padding: 20px; }
-  h2 { font-size: 1.15em; margin: 24px 0 6px; color: #1a73e8; }
-  .chart-box { border: 1px solid #dadce0; border-radius: 8px; padding: 8px; margin: 16px 0; }
-  .controls { background: #f8f9fa; border: 1px solid #dadce0; border-radius: 8px; padding: 14px 18px; margin: 16px 0; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
-  .controls label { font-size: 0.85em; color: #5f6368; }
+  h2 { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 1.15em; margin: 24px 0 6px; color: #0B4C5B; }
+  .chart-box { border: 1px solid #85A5AD; border-radius: 8px; padding: 8px; margin: 16px 0; background: #fff; }
+  .controls { background: #fff; border: 1px solid #85A5AD; border-radius: 8px; padding: 14px 18px; margin: 16px 0; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
+  .controls label { font-size: 0.85em; color: #394649; }
   .ctrl { display: flex; align-items: center; gap: 6px; }
-  .ctrl input[type="range"] { width: 120px; accent-color: #1a73e8; }
-  .ctrl .val { font-weight: 600; color: #1a73e8; font-size: 0.9em; min-width: 40px; }
-  .note { font-size: 0.82em; color: #5f6368; margin: 6px 0; line-height: 1.4; }
-  .source { font-size: 0.78em; color: #999; margin-top: 4px; }
-  a { color: #1a73e8; }
-  .footnote { font-size: 0.8em; color: #5f6368; border-top: 1px solid #dadce0; margin-top: 24px; padding-top: 12px; }
+  .ctrl input[type="range"] { width: 120px; accent-color: #0B4C5B; }
+  .ctrl .val { font-weight: 600; color: #0B4C5B; font-size: 0.9em; min-width: 40px; }
+  .note { font-size: 0.82em; color: #394649; margin: 6px 0; line-height: 1.4; }
+  .source { font-size: 0.78em; color: #85A5AD; margin-top: 4px; }
+  a { color: #006970; }
+  .footnote { font-size: 0.8em; color: #394649; border-top: 1px solid #85A5AD; margin-top: 24px; padding-top: 12px; }
 </style>
 </head>
 <body>
@@ -60,7 +60,7 @@ const N = 200000;
 const OIL_BASE = 71;
 const FOOD_SHARES = [0.65, 0.55, 0.45, 0.35, 0.20];
 const Q_NAMES = ['Q1 (poorest 20%)', 'Q2', 'Q3', 'Q4', 'Q5 (richest 20%)'];
-const Q_COLORS = ['#d62728', '#ff7f0e', '#bcbd22', '#2ca02c', '#1f77b4'];
+const Q_COLORS = ['#0B4C5B', '#006970', '#009688', '#85A5AD', '#B0BEC5'];
 const PARAMS = {
   population: 2300e6, meanIncome: 5.50, gini: 0.40,
   povFood: 2.50, povExtreme: 2.15, povModerate: 3.65,
@@ -169,9 +169,9 @@ function doUpdate() {
 
   const pols = [
     { label:'No intervention', x:0, y:rNone.newFoodM, color:'#d62728', sym:'circle' },
-    { label:'Cash transfer\n($0.15/d, bottom 30%)', x:rC1.fiscalAnnualM/1000, y:rC1.newFoodM, color:'#2ca02c', sym:'circle' },
-    { label:'Food subsidy\n(50% absorbed)', x:rSub.fiscalAnnualM/1000, y:rSub.newFoodM, color:'#1f77b4', sym:'diamond' },
-    { label:'Price controls', x:0, y:rPC.newFoodM, color:'#ff7f0e', sym:'x' },
+    { label:'Cash transfer\n($0.15/d, bottom 30%)', x:rC1.fiscalAnnualM/1000, y:rC1.newFoodM, color:'#006970', sym:'circle' },
+    { label:'Food subsidy\n(50% absorbed)', x:rSub.fiscalAnnualM/1000, y:rSub.newFoodM, color:'#0B4C5B', sym:'diamond' },
+    { label:'Price controls', x:0, y:rPC.newFoodM, color:'#FFB52C', sym:'x' },
   ];
 
   const traces2 = pols.map(d => ({
