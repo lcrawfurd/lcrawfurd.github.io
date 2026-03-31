@@ -46,7 +46,24 @@
   <p class="source">Food expenditure shares from World Bank household surveys (SSA median). Pass-through from Baffes (2007), Dillon &amp; Barrett (2016).</p>
 
   <h2>Figure 2. Policy comparison</h2>
-  <p class="note">Fiscal cost vs impact on food insecurity. Points further down and to the left are better (fewer new hungry people, lower cost). Cash transfers are more cost-effective than untargeted food subsidies because they reach the people at the margin.</p>
+  <p class="note">Fiscal cost vs impact on food insecurity. Points further down and to the left are better (fewer new hungry people, lower cost). Drag the sliders to explore different transfer designs.</p>
+  <div class="controls">
+    <div class="ctrl">
+      <label>Transfer $/day:&nbsp;</label>
+      <input type="range" id="cash_amt" min="0.05" max="0.50" value="0.15" step="0.05">
+      <span class="val" id="cash_amt_v">$0.15</span>
+    </div>
+    <div class="ctrl">
+      <label>Coverage:&nbsp;</label>
+      <input type="range" id="cash_cov" min="5" max="60" value="30" step="5">
+      <span class="val" id="cash_cov_v">30%</span>
+    </div>
+    <div class="ctrl">
+      <label>Subsidy absorption:&nbsp;</label>
+      <input type="range" id="sub_rate" min="10" max="80" value="50" step="5">
+      <span class="val" id="sub_rate_v">50%</span>
+    </div>
+  </div>
   <div class="chart-box"><div id="fig2"></div></div>
   <p class="source">Simulation of 200,000 synthetic individuals. <a href="https://lcrawfurd.github.io/iran-oil-shock.html" target="_blank">Full interactive model →</a></p>
 
@@ -104,7 +121,8 @@ function genPop() {
   return {incomes:inc, foodShare:fs, quintileBreaks:qb};
 }
 
-function impacts(oilPrice, pt, policy, transferUsd, transferCov) {
+function impacts(oilPrice, pt, policy, transferUsd, transferCov, subsidyRate) {
+  const sr = subsidyRate || PARAMS.subsidyRate;
   const foodChange = (oilPrice-OIL_BASE)/OIL_BASE * pt;
   const effInc = new Float64Array(N);
   for(let i=0;i<N;i++) effInc[i] = pop.incomes[i]*(1-pop.foodShare[i]*foodChange);
@@ -115,8 +133,8 @@ function impacts(oilPrice, pt, policy, transferUsd, transferCov) {
     for(let i=0;i<N;i++) { if(pop.incomes[i]<=th){effInc[i]+=transferUsd*PARAMS.transferFoodShare;elig++;} }
     fiscalDaily=(elig/N)*PARAMS.population*transferUsd;
   } else if(policy==='subsidy') {
-    for(let i=0;i<N;i++) effInc[i]+=pop.incomes[i]*pop.foodShare[i]*foodChange*PARAMS.subsidyRate;
-    let ts=0; for(let i=0;i<N;i++) ts+=pop.incomes[i]*pop.foodShare[i]*foodChange*PARAMS.subsidyRate;
+    for(let i=0;i<N;i++) effInc[i]+=pop.incomes[i]*pop.foodShare[i]*foodChange*sr;
+    let ts=0; for(let i=0;i<N;i++) ts+=pop.incomes[i]*pop.foodShare[i]*foodChange*sr;
     fiscalDaily=(ts/N)*PARAMS.population;
   } else if(policy==='pricecontrol') {
     let s2=99; function r2(){s2=(s2*1664525+1013904223)&0xFFFFFFFF;return(s2>>>0)/0xFFFFFFFF;}
@@ -137,8 +155,15 @@ function update(){clearTimeout(timer);timer=setTimeout(doUpdate,80);}
 function doUpdate() {
   const oilPrice = getVal('oil_price');
   const pt = getVal('passthrough');
+  const cashAmt = getVal('cash_amt');
+  const cashCov = getVal('cash_cov') / 100;
+  const subRate = getVal('sub_rate') / 100;
+
   document.getElementById('oil_v').textContent = '$'+oilPrice;
   document.getElementById('pt_v').textContent = pt.toFixed(2);
+  document.getElementById('cash_amt_v').textContent = '$'+cashAmt.toFixed(2);
+  document.getElementById('cash_cov_v').textContent = Math.round(cashCov*100)+'%';
+  document.getElementById('sub_rate_v').textContent = Math.round(subRate*100)+'%';
 
   // FIGURE 1: Income loss by quintile (bar chart at current oil price)
   const foodPctChange = (oilPrice-OIL_BASE)/OIL_BASE * pt;
@@ -156,21 +181,24 @@ function doUpdate() {
     xaxis: { tickfont: { size: 11 } },
     annotations: [{
       x: 0.5, y: 1.02, xref: 'paper', yref: 'paper', showarrow: false,
-      text: `Oil $${oilPrice}/barrel → food prices +${foodPctChange.toFixed(1)*100>0?(foodPctChange*100).toFixed(1):'0'}%`,
+      text: `Oil $${oilPrice}/barrel → food prices +${(foodPctChange*100).toFixed(1)}%`,
       font: { size: 13, color: '#333' }
     }]
   }, {responsive:true});
 
   // FIGURE 2: Policy scatterplot
   const rNone = impacts(oilPrice, pt, 'none', 0, 0);
-  const rC1 = impacts(oilPrice, pt, 'cash', PARAMS.cash1Amt, PARAMS.cash1Cov);
-  const rSub = impacts(oilPrice, pt, 'subsidy', 0, 0);
+  const rC1 = impacts(oilPrice, pt, 'cash', cashAmt, cashCov);
+  const rSub = impacts(oilPrice, pt, 'subsidy', 0, 0, subRate);
   const rPC = impacts(oilPrice, pt, 'pricecontrol', 0, 0);
+
+  const cashLabel = `Cash transfer\n($${cashAmt.toFixed(2)}/d, bottom ${Math.round(cashCov*100)}%)`;
+  const subLabel = `Food subsidy\n(${Math.round(subRate*100)}% absorbed)`;
 
   const pols = [
     { label:'No intervention', x:0, y:rNone.newFoodM, color:'#d62728', sym:'circle' },
-    { label:'Cash transfer\n($0.15/d, bottom 30%)', x:rC1.fiscalAnnualM/1000, y:rC1.newFoodM, color:'#006970', sym:'circle' },
-    { label:'Food subsidy\n(50% absorbed)', x:rSub.fiscalAnnualM/1000, y:rSub.newFoodM, color:'#0B4C5B', sym:'diamond' },
+    { label:cashLabel, x:rC1.fiscalAnnualM/1000, y:rC1.newFoodM, color:'#006970', sym:'circle' },
+    { label:subLabel, x:rSub.fiscalAnnualM/1000, y:rSub.newFoodM, color:'#0B4C5B', sym:'diamond' },
     { label:'Price controls', x:0, y:rPC.newFoodM, color:'#FFB52C', sym:'x' },
   ];
 
