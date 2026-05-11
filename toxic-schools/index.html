@@ -201,7 +201,7 @@ SCHOOL1.forEach(s => {
 });
 
 // ── Populate country filter ──────────────────────────────────────────────────
-const countries = [...new Set(SITES.map(s => s[4]).filter(Boolean))].sort();
+const countries = [...new Set(SITES.filter(s => s[7] > 0).map(s => s[4]).filter(Boolean))].sort();
 const countrySelect = document.getElementById('country-filter');
 countries.forEach(c => {
   const o = document.createElement('option');
