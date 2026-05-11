@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Toxic Schools — About</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    .hero {
+      background: #1a365d;
+      color: #fff;
+      border-radius: 8px;
+      padding: 1.75rem 2rem;
+      margin-bottom: 2rem;
+    }
+    .hero h1 {
+      font-size: 1.5rem;
+      margin-bottom: 0.35rem;
+      color: #fff;
+    }
+    .hero .meta {
+      font-size: 0.95rem;
+      opacity: 0.8;
+      margin-bottom: 1rem;
+    }
+    .hero .abstract {
+      font-size: 0.95rem;
+      line-height: 1.65;
+      opacity: 0.92;
+    }
+    .hero-links {
+      margin-top: 1.1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+    .btn {
+      display: inline-block;
+      padding: 0.45rem 1rem;
+      border-radius: 5px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .btn-light {
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+    .btn-light:hover { background: rgba(255,255,255,0.25); text-decoration: none; }
+    .btn-map {
+      background: #e8a838;
+      color: #1a365d;
+      border: none;
+    }
+    .btn-map:hover { background: #f0bc50; text-decoration: none; }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+      margin: 1.25rem 0;
+    }
+    .stat-box {
+      background: #f7fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 7px;
+      padding: 1rem 1.1rem;
+    }
+    .stat-box .n { font-size: 1.6rem; font-weight: 700; color: #1a365d; line-height: 1.1; }
+    .stat-box .l { font-size: 0.85rem; color: #4a5568; margin-top: 0.2rem; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      margin: 1rem 0 1.5rem;
+    }
+    thead th {
+      background: #edf2f7;
+      text-align: left;
+      padding: 0.5rem 0.75rem;
+      font-weight: 600;
+      color: #1a365d;
+    }
+    td { padding: 0.45rem 0.75rem; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      padding: 0.1rem 0.45rem;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+    .tag-emis { background: #bee3f8; color: #1a365d; }
+    .tag-ov   { background: #c6f6d5; color: #22543d; }
+    .tag-map  { background: #fefcbf; color: #744210; }
+
+    .note {
+      font-size: 0.88rem;
+      color: #4a5568;
+      background: #f7fafc;
+      border-left: 3px solid #a0aec0;
+      padding: 0.75rem 1rem;
+      border-radius: 0 4px 4px 0;
+      margin: 1rem 0;
+    }
+
+    .cite-block {
+      background: #f7fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 1rem 1.1rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      margin-top: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a href="../index.html" class="site-name">Lee Crawfurd</a>
+    <nav>
+      <a href="../index.html">Home</a>
+      <a href="../data.html">Data</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ── Hero ── -->
+  <div class="hero">
+    <h1>Toxic Schools: Proximity to Polluted Sites in 17 Low- and Middle-Income Countries</h1>
+    <div class="meta">Lee Crawfurd &nbsp;·&nbsp; Center for Global Development &nbsp;·&nbsp; April 2026</div>
+    <div class="abstract">
+      We provide the first cross-country assessment of school proximity to known polluted sites in low- and middle-income countries,
+      combining geocoded data on 2,840 contaminated sites from the Pure Earth Toxic Sites Identification Program (TSIP)
+      with the locations of approximately 2.7 million schools across 17 countries.
+      We find that at least 171,348 schools (6.3%) are within 5&nbsp;km of a known polluted site — a lower bound,
+      as the TSIP captures only a fraction of actual contaminated sites. Private schools are consistently
+      more likely than public schools to be near polluted sites, a reversal of the pattern found in the
+      United States, driven mainly by the co-location of private schools and industry in wealthy urban areas.
+    </div>
+    <div class="hero-links">
+      <a class="btn btn-map" href="index.html">Open interactive map</a>
+      <a class="btn btn-light" href="https://doi.org/10.5281/zenodo.19359188">Replication data (Zenodo)</a>
+      <a class="btn btn-light" href="https://www.cgdev.org">CGD Working Paper</a>
+    </div>
+  </div>
+
+  <!-- ── Key numbers ── -->
+  <h2>Key findings</h2>
+
+  <div class="stat-grid">
+    <div class="stat-box"><div class="n">2,840</div><div class="l">Contaminated sites across 17 countries</div></div>
+    <div class="stat-box"><div class="n">2.7M</div><div class="l">Geocoded schools analysed</div></div>
+    <div class="stat-box"><div class="n">171,348</div><div class="l">Schools within 5&nbsp;km of a site (6.3%)</div></div>
+    <div class="stat-box"><div class="n">9.9%</div><div class="l">Students in schools within 5&nbsp;km (7 countries)</div></div>
+    <div class="stat-box"><div class="n">&gt;25%</div><div class="l">Schools within 5&nbsp;km in Ghana (highest)</div></div>
+    <div class="stat-box"><div class="n">8/8</div><div class="l">Countries where private schools are more exposed than public</div></div>
+  </div>
+
+  <p>Proximity is a lower bound on true exposure: the TSIP catalogs only a fraction of actual contaminated sites
+  (estimates suggest one-seventh to one-ninth of real sites in Ghana), and the database includes both active
+  and legacy sites. Schools near polluted sites are located in <em>wealthier</em> neighbourhoods in 16 of 17
+  countries, reflecting the concentration of private schools, industry, and wealth in urban cores rather than
+  land-market sorting by disadvantaged families.</p>
+
+  <!-- ── Map ── -->
+  <h2>About the map</h2>
+
+  <p>The interactive map on this site displays all 4,596 TSIP sites globally (coloured by industry type) alongside
+  school locations for the 14 countries covered by Overture Maps in our dataset.
+  School markers cluster at low zoom and expand on zoom-in.
+  Clicking any site marker shows the site name, industry category, and a list of nearby schools with distances.</p>
+
+  <div class="note">
+    <strong>Note on map coverage:</strong> the map shows schools for 14 countries derived from
+    Overture Maps / OpenStreetMap. Five additional countries in the paper
+    (Argentina, Bangladesh, Mexico, Pakistan, Uruguay) use national EMIS data that are not yet
+    included in the map layer. The paper's 6.3% proximity figure covers all 17 countries including these five.
+  </div>
+
+  <p>Layers:</p>
+  <ul style="margin:0.5rem 0 1rem 1.5rem; font-size:0.95rem; line-height:1.9">
+    <li><strong>Polluted sites (TSIP)</strong> — all 4,596 sites; circle size scales with number of nearby schools; colour indicates industry type.</li>
+    <li><strong>Schools within 1&nbsp;km</strong> — 15,957 schools (clustered); toggled on by default.</li>
+    <li><strong>Schools 1–5&nbsp;km</strong> — 124,111 additional schools; loaded on demand (~9&nbsp;MB).</li>
+    <li><strong>5&nbsp;km buffer circles</strong> — shows the 5&nbsp;km catchment ring around each site with at least one nearby school.</li>
+  </ul>
+
+  <!-- ── Data sources ── -->
+  <h2>Data sources</h2>
+
+  <h3>Contaminated sites</h3>
+
+  <p>Polluted site locations come from the <strong>Toxic Sites Identification Program (TSIP)</strong> maintained
+  by <a href="https://www.pureearth.org">Pure Earth</a>, downloaded in March 2026 via the
+  <a href="https://www.contaminatedsites.org">contaminatedsites.org</a> API. The TSIP is the most comprehensive
+  global inventory of contaminated sites in lower-income settings. Sites are identified through government
+  requests, community reports, academic research, and media coverage. The database includes both active and
+  inactive legacy sites across a range of pollutants: lead (1,582 sites globally), mercury (620), arsenic (464),
+  chromium (404), and others.</p>
+
+  <div class="note">
+    The TSIP substantially undercounts actual contaminated sites — estimates suggest it captures
+    one-seventh to one-ninth of real sites in Ghana. Proximity figures in the paper and map are therefore
+    lower bounds on true school–pollution proximity.
+  </div>
+
+  <h3>School locations</h3>
+
+  <p>The paper uses two types of school location data. National school census (EMIS) data were used for 11
+  countries; Overture Maps data were used for 6 additional countries where EMIS data with geocoordinates
+  are not publicly available. The map on this site uses Overture Maps data for 14 countries (the 6 Overture-only
+  countries plus 8 of the EMIS countries where Overture coverage is also available).</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Country</th>
+        <th>Source</th>
+        <th>Schools</th>
+        <th>Year</th>
+        <th>In map</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>India</td><td>UDISE+ (Ministry of Education)</td><td>1,372,195</td><td>2022/23</td><td><span class="tag tag-map">map</span></td></tr>
+      <tr><td>Indonesia</td><td>Dapodik (Ministry of Education)</td><td>396,280</td><td>2024</td><td><span class="tag tag-map">map</span></td></tr>
+      <tr><td>Brazil</td><td>INEP Censo Escolar</td><td>150,131</td><td>2023</td><td><span class="tag tag-map">map</span></td></tr>
+      <tr><td>Mexico</td><td>SEP Catálogo de Centros de Trabajo</td><td>270,228</td><td>2025</td><td>—</td></tr>
+      <tr><td>Argentina</td><td>Mapa Educativo Nacional</td><td>64,638</td><td>2023</td><td>—</td></tr>
+      <tr><td>Philippines</td><td>DepEd school master list</td><td>16,022</td><td>2023</td><td><span class="tag tag-map">map</span></td></tr>
+      <tr><td>Peru</td><td>MINEDU Padrón de IE</td><td>175,754</td><td>2024</td><td><span class="tag tag-map">map</span></td></tr>
+      <tr><td>Ghana</td><td>ESRAG EMIS (geocoded via GhanaPostGPS)</td><td>22,581</td><td>2020/21</td><td><span class="tag tag-map">map</span></td></tr>
+      <tr><td>Kenya</td><td>NEMIS (Ministry of Education)</td><td>26,197</td><td>2023</td><td><span class="tag tag-map">map</span></td></tr>
+      <tr><td>Colombia</td><td>SISE (DANE)</td><td>56,650</td><td>2024</td><td><span class="tag tag-map">map</span></td></tr>
+      <tr><td>Bangladesh</td><td>LGED education facilities (HDX)</td><td>78,129</td><td>2023</td><td>—</td></tr>
+      <tr><td>Pakistan</td><td>Punjab EMIS</td><td>—</td><td>—</td><td>—</td></tr>
+      <tr><td>Uruguay</td><td>ANEP</td><td>—</td><td>—</td><td>—</td></tr>
+      <tr><td>Vietnam</td><td>Overture Maps (Feb 2026)</td><td>67,087</td><td>2026</td><td><span class="tag tag-map">map</span></td></tr>
+      <tr><td>Cambodia</td><td>Overture Maps (Feb 2026)</td><td>17,148</td><td>2026</td><td><span class="tag tag-map">map</span></td></tr>
+      <tr><td>Kazakhstan</td><td>Overture Maps (Feb 2026)</td><td>6,365</td><td>2026</td><td><span class="tag tag-map">map</span></td></tr>
+      <tr><td>Kyrgyzstan</td><td>Overture Maps (Feb 2026)</td><td>1,935</td><td>2026</td><td><span class="tag tag-map">map</span></td></tr>
+      <tr><td>Armenia</td><td>Overture Maps (Feb 2026)</td><td>1,379</td><td>2026</td><td><span class="tag tag-map">map</span></td></tr>
+      <tr><td>Mongolia</td><td>Overture Maps (Feb 2026)</td><td>795</td><td>2026</td><td><span class="tag tag-map">map</span></td></tr>
+    </tbody>
+  </table>
+
+  <p>Overture Maps data are available under the
+  <a href="https://cdla.dev/permissive-2-0/">CDLA Permissive 2.0</a> licence.
+  National EMIS datasets are obtained from government open-data portals; access conditions for each
+  country are documented in the paper's replication package.</p>
+
+  <h3>Neighborhood wealth</h3>
+
+  <p>The paper uses the <strong>Meta Relative Wealth Index (RWI)</strong> of
+  <a href="https://doi.org/10.1073/pnas.2113658119">Chi et al. (2022)</a>,
+  which provides gridded estimates of relative household wealth at 2.4&nbsp;km resolution for all LMICs,
+  derived from machine learning on satellite imagery and connectivity data.
+  RWI data are available from the
+  <a href="https://data.humdata.org">Humanitarian Data Exchange</a>.</p>
+
+  <!-- ── Replication ── -->
+  <h2>Replication</h2>
+
+  <p>All Python analysis code, raw school census data, TSIP pollution site data, government contaminated site
+  registers, and generated tables and figures are archived at:</p>
+
+  <p style="margin:0.75rem 0">
+    <a href="https://doi.org/10.5281/zenodo.19359188">https://doi.org/10.5281/zenodo.19359188</a>
+  </p>
+
+  <!-- ── Citation ── -->
+  <h2>Citation</h2>
+
+  <div class="cite-block">Crawfurd, Lee (2026). "Toxic Schools: Proximity to Polluted Sites in 17 Low- and Middle-Income Countries." Center for Global Development Working Paper. https://doi.org/10.5281/zenodo.19359188</div>
+
+</main>
+
+<footer>
+  Lee Crawfurd &nbsp;·&nbsp; Center for Global Development
+</footer>
+
+</body>
+</html>
