@@ -1,27 +1,14 @@
-/* Base */
+/* Base — always dark */
 :root {
-  color-scheme: light dark;
-  --text: #2d3748;
-  --text-light: #4a5568;
-  --accent: #1a365d;
-  --accent-light: #2c5282;
-  --bg: #ffffff;
-  --bg-alt: #f7fafc;
-  --border: #e2e8f0;
+  color-scheme: dark;
+  --text: #e2e8f0;
+  --text-light: #a0aec0;
+  --accent: #90cdf4;
+  --accent-light: #63b3ed;
+  --bg: #1a202c;
+  --bg-alt: #2d3748;
+  --border: #2d3748;
   --max-width: 780px;
-}
-
-/* Dark mode — follows the visitor's system setting */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #e2e8f0;
-    --text-light: #a0aec0;
-    --accent: #90cdf4;
-    --accent-light: #63b3ed;
-    --bg: #1a202c;
-    --bg-alt: #2d3748;
-    --border: #2d3748;
-  }
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
