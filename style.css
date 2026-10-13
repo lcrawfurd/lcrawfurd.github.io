@@ -73,7 +73,7 @@ main {
   height: 160px;
   border-radius: 50%;
   object-fit: cover;
-  object-position: 60% 50%;
+  object-position: 66% 50%;
   flex-shrink: 0;
 }
 
